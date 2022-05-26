@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"io/fs"
 	"io/ioutil"
@@ -57,32 +58,29 @@ func dirTreeCore(out io.Writer, path string, printFiles bool, currentNesting int
 			(*nestingLevels)[currentNesting] = isLast
 		}
 		// ...tab symbols
-		print("\t")
 		for n := 0; n < currentNesting; n++ {
-			if (*nestingLevels)[n] {
-				print(" ")
-			} else {
-				print("│")
+			if !(*nestingLevels)[n] {
+				fmt.Fprint(out, "│")
 			}
-			print("\t")
+			fmt.Fprint(out, "\t")
 		}
 		// ...file names
 		if isLast {
-			print("└───")
+			fmt.Fprint(out, "└───")
 		} else {
-			print("├───")
+			fmt.Fprint(out, "├───")
 		}
-		print(file.Name())
+		fmt.Fprint(out, file.Name())
 		if !file.IsDir() {
-			print(" (")
+			fmt.Fprint(out, " (")
 			if fileSize := file.Size(); fileSize == 0 {
-				print("empty")
+				fmt.Fprint(out, "empty")
 			} else {
-				print(fileSize, "b")
+				fmt.Fprint(out, fileSize, "b")
 			}
-			print(")")
+			fmt.Fprint(out, ")")
 		}
-		println()
+		fmt.Fprintln(out)
 
 		// Call recursively if it's a folder
 		if file.IsDir() {
