@@ -1,3 +1,3 @@
 module hw1_tree
 
-go 1.18
+go 1.9

@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"io"
-	"io/fs"
 	"io/ioutil"
 	"os"
 	"sort"
@@ -35,7 +34,7 @@ func dirTreeCore(out io.Writer, path string, printFiles bool, currentNesting int
 	}
 	// Remove files if no "-f" environment parameter
 	if !printFiles {
-		dirs := make([]fs.FileInfo, 0)
+		dirs := make([]os.FileInfo, 0)
 		for _, file := range files {
 			if file.IsDir() {
 				dirs = append(dirs, file)
