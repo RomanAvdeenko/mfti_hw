@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+type MyStr string
 type job func(in, out chan interface{})
 
 const (
