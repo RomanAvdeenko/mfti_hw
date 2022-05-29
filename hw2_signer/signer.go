@@ -1,24 +1,53 @@
 package main
 
 import (
-	"fmt"
+	"sync"
 )
 
 // сюда писать код
-func ExecutePipeline(jobs MyStr) {
-	//in := make(chan interface{})
-	//out := make(chan interface{})
+// https://github.com/Terminator637/hw2_signer
+func ExecutePipeline(jobs ...job) {
+	in := make(chan any)
+	wg := &sync.WaitGroup{}
 
-	//jobs(in, out)
-	print(jobs)
+	wg.Add(len(jobs))
+	for _, j := range jobs {
+		out := make(chan any)
+		//
+		go func(j job, in, out chan any, wg *sync.WaitGroup) {
+			defer wg.Done()
+			defer close(out)
+
+			j(in, out)
+		}(j, in, out, wg)
+		//
+		in = out
+	}
+	wg.Wait()
 }
 
-func SingleHash(in, out chan interface{})     {}
-func MultiHash(in, out chan interface{})      {}
-func CombineResults(in, out chan interface{}) {}
+func SingleHash(in, out chan any) {
+	for v := range in {
+		//v := v.(string)
+		//out <- DataSignerCrc32(v) + "~" + DataSignerCrc32(DataSignerMd5(v))
+		out <- v
+	}
+}
+func MultiHash(in, out chan any) {
+	for v := range in {
+		//v := v.(string)
 
-func main() {
-	ExecutePipeline("Test")
-	fmt.Println(DataSignerMd5("0"))
-	fmt.Println(DataSignerCrc32("0"))
+		//for i := 0; i < 6; i++ {
+		//	i := strconv.Itoa(i)
+		//	out <- DataSignerCrc32(i + v)
+		//}
+		out <- v
+	}
+}
+
+func CombineResults(in, out chan any) {
+	for v := range in {
+		//v := v.(string)
+		out <- v
+	}
 }
